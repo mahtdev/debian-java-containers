@@ -157,7 +157,7 @@ export DOCKER_PASSWORD=tu_token
 
 ## 📚 Documentación
 
-- [Guía de Simulación de Fechas](docs/FAKE_DATE.md)
+- [Guía de Simulación de Fechas](docs/README_FAKE_DATE.md)
 - [Scripts de Docker Hub](docs/DOCKERHUB.md)
 - [Ejemplos de Uso](examples/)
 - [API Reference](docs/API.md)
