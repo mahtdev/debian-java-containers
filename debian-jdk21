@@ -16,7 +16,7 @@ RUN apt update -y \
     net-tools \
     faketime
 
-COPY ./bin/jdk21.sh /tmp/
+COPY ./scripts/utils/jdk21.sh /tmp/
 COPY ./packages/jdk-21_linux-x64_bin.tar.gz /opt/
 
 RUN chmod +x /tmp/jdk21.sh
@@ -31,13 +31,13 @@ ENV JAVA_HOME=/opt/jdk-21
 ENV TZ=UTC
 
 # Scripts para ejecutar con fecha simulada
-COPY ./bin/run_with_fake_date.sh /usr/local/bin/
-COPY ./bin/run_java_fake_date.sh /usr/local/bin/
-COPY ./bin/demo_fake_date.sh /usr/local/bin/
+COPY ./scripts/utils/run_with_fake_date.sh /usr/local/bin/
+COPY ./scripts/utils/run_java_fake_date.sh /usr/local/bin/
+COPY ./scripts/utils/demo_fake_date.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/run_with_fake_date.sh /usr/local/bin/run_java_fake_date.sh /usr/local/bin/demo_fake_date.sh
 
 # Crear directorio de trabajo y copiar archivos de ejemplo
 WORKDIR /app
-COPY ./bin/TestDate.java /app/
+COPY ./scripts/utils/TestDate.java /app/
 
 CMD ["bash"]

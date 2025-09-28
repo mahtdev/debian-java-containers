@@ -44,6 +44,12 @@ if [[ "$1" == "-h" || "$1" == "--help" ]]; then
     exit 0
 fi
 
+# Cargar archivo .env si existe
+if [[ -f .env ]]; then
+    echo "📄 Cargando variables de entorno desde .env..."
+    source .env
+fi
+
 # Obtener parámetros
 TAG_NAME="${1:-$DEFAULT_TAG}"
 VERSION="${2:-$DEFAULT_VERSION}"
