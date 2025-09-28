@@ -1,0 +1,16 @@
+# Global owners
+* @mahtdev
+
+# Docker files
+containers/ @mahtdev
+
+# Scripts
+scripts/ @mahtdev
+
+# Documentation
+docs/ @mahtdev
+README.md @mahtdev
+CHANGELOG.md @mahtdev
+
+# GitHub workflows
+.github/ @mahtdev

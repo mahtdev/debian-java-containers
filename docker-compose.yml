@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  # JDK 8 Development Environment
+  jdk8-dev:
+    build:
+      context: .
+      dockerfile: containers/debian-dev-jdk8
+    image: mahtdev/debian-dev-jdk8:12.12
+    container_name: jdk8-dev
+    volumes:
+      - .:/workspace
+      - maven-cache:/root/.m2
+    working_dir: /workspace
+    command: bash
+    profiles:
+      - dev
+      - jdk8
+
+  # JDK 11 Environment
+  jdk11:
+    build:
+      context: .
+      dockerfile: containers/debian-jdk11
+    image: mahtdev/debian-jdk11:12.12
+    container_name: jdk11
+    volumes:
+      - .:/workspace
+    working_dir: /workspace
+    command: bash
+    profiles:
+      - jdk11
+
+  # JDK 17 Environment
+  jdk17:
+    build:
+      context: .
+      dockerfile: containers/debian-jdk17
+    image: mahtdev/debian-jdk17:12.12
+    container_name: jdk17
+    volumes:
+      - .:/workspace
+    working_dir: /workspace
+    command: bash
+    profiles:
+      - jdk17
+
+  # JDK 21 Environment with Fake Date Support
+  jdk21:
+    build:
+      context: .
+      dockerfile: containers/debian-jdk21
+    image: mahtdev/debian-jdk21:12.12
+    container_name: jdk21
+    volumes:
+      - .:/workspace
+    working_dir: /workspace
+    command: bash
+    profiles:
+      - jdk21
+      - fake-date
+
+  # Demo Environment
+  demo:
+    image: mahtdev/debian-jdk21:12.12
+    container_name: demo
+    volumes:
+      - .:/workspace
+    working_dir: /workspace
+    command: demo_fake_date.sh
+    profiles:
+      - demo
+
+volumes:
+  maven-cache:
+    driver: local

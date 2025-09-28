@@ -1,0 +1,29 @@
+FROM debian:12.12-slim
+
+# Actualizaicion del sistema
+RUN apt update -y \
+    && apt upgrade -y \
+    && apt-get install --no-install-recommends -y \
+    ca-certificates \
+    apt-transport-https \
+    lsb-release \
+    wget \
+    curl \
+    telnet \
+    nano \
+    iproute2 \
+    procps \
+    net-tools
+
+COPY ./bin/jdk8.sh /tmp/
+COPY ./packages/jdk-8u202-linux-x64.tar.gz /opt/
+
+RUN chmod +x /tmp/jdk8.sh
+
+# Instalar java
+RUN bash /tmp/jdk8.sh
+RUN rm /tmp/jdk8.sh
+
+ENV JAVA_HOME=/opt/jdk-8
+
+CMD ["bash"]

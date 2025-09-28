@@ -1,0 +1,65 @@
+# GitHub Repository Settings
+# This file documents the recommended repository settings
+
+repository:
+  name: "debian-java-containers"
+  description: "🐳 Debian Java Containers with Fake Date Support - Docker images with OpenJDK 8, 11, 17, 21 and date simulation capabilities"
+  homepage: "https://hub.docker.com/r/mahtdev/debian-jdk21"
+  topics:
+    - "docker"
+    - "java"
+    - "openjdk"
+    - "debian"
+    - "containers"
+    - "fake-date"
+    - "simulation"
+    - "jdk8"
+    - "jdk11"
+    - "jdk17"
+    - "jdk21"
+    - "faketime"
+    - "testing"
+    - "development"
+
+  visibility: "public"
+  has_issues: true
+  has_projects: false
+  has_wiki: false
+  has_discussions: true
+  allow_squash_merge: true
+  allow_merge_commit: false
+  allow_rebase_merge: true
+  allow_auto_merge: false
+  delete_branch_on_merge: true
+
+  # Branch protection rules
+  default_branch: "main"
+  branch_protection:
+    - branch: "main"
+      required_status_checks:
+        strict: true
+        contexts:
+          - "Docker Build and Push"
+      enforce_admins: false
+      required_pull_request_reviews:
+        required_approving_review_count: 1
+        dismiss_stale_reviews: true
+        require_code_owner_reviews: true
+      restrictions: null
+
+  # Security settings
+  vulnerability_alerts: true
+  secret_scanning: true
+  secret_scanning_push_protection: true
+
+  # Features
+  features:
+    issues: true
+    discussions: true
+    projects: false
+    wiki: false
+    pages: false
+    packages: false
+    security: true
+    insights: true
+    actions: true

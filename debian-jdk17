@@ -1,0 +1,29 @@
+FROM debian:12.12-slim
+
+# Actualizaicion del sistema
+RUN apt update -y \
+    && apt upgrade -y \
+    && apt-get install --no-install-recommends -y \
+    ca-certificates \
+    apt-transport-https \
+    lsb-release \
+    wget \
+    curl \
+    telnet \
+    nano \
+    iproute2 \
+    procps \
+    net-tools
+
+COPY ./bin/jdk17.sh /tmp/
+COPY ./packages/jdk-17.0.12_linux-x64_bin.tar.gz /opt/
+
+RUN chmod +x /tmp/jdk17.sh
+
+# Instalar java
+RUN bash /tmp/jdk17.sh
+RUN rm /tmp/jdk17.sh
+
+ENV JAVA_HOME=/opt/jdk-17
+
+CMD ["bash"]
