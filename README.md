@@ -207,7 +207,7 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo [LICENSE](LICENSE) para
 
 ## 🆘 Soporte
 
-- 📧 **Email**: [tu-email@ejemplo.com](mailto:tu-email@ejemplo.com)
+- 📧 **Email**: [support@maht.dev](mailto:support@maht.dev)
 - 🐛 **Issues**: [GitHub Issues](https://github.com/mahtdev/debian-java-containers/issues)
 - 📖 **Documentación**: [Wiki](https://github.com/mahtdev/debian-java-containers/wiki)
 
