@@ -68,7 +68,6 @@ packages/*.deb
 packages/*.rpm
 
 # Build artifacts
-build/
 target/
 dist/
 out/

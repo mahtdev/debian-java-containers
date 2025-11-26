@@ -55,6 +55,6 @@ COPY ./scripts/utils/demo_fake_date.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/run_with_fake_date.sh /usr/local/bin/run_java_fake_date.sh /usr/local/bin/demo_fake_date.sh
 
 # Crear directorio de trabajo y copiar archivos de ejemplo
-COPY ./scripts/utils/TestDate.java /app/
+COPY ./scripts/utils/TestDate.java /workspace/
 
 CMD ["bash"]

@@ -6,34 +6,34 @@ RUN apt update -y \
     && apt-get install --no-install-recommends -y \
     ca-certificates \
     apt-transport-https \
-    lsb-release \
-    wget \
+    lsb-release \    
     curl \
-    telnet \
-    nano \
-    vim \
     iproute2 \
     procps \
-    net-tools \
-    maven \
-    git \
-    git-lfs \
-    openssh-client \
+    faketime \
+    wget \
     unzip \
     zip \
-    zsh \
-    zsh-common \
-    build-essential \
-    make \
-    tree \
+    git \
+    vim \
+    nano \
     htop \
+    tree \
     jq \
-    bat \
-    fd-find \
+    net-tools \
+    iputils-ping \
+    telnet \
+    build-essential \
+    sqlite3 \    
+    maven \
+    ca-certificates \
     ripgrep \
-    faketime \
-    sudo \
-    && apt-get clean
+    fd-find \
+    redis \
+    redis-server \
+    && apt-get autoremove -y \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
 
 # Java
 COPY ./scripts/utils/jdk8.sh /tmp/
@@ -45,29 +45,16 @@ RUN chmod +x /tmp/jdk8.sh \
 ENV JAVA_HOME=/opt/jdk-8
 ENV PATH="${JAVA_HOME}/bin:${PATH}"
 
-# Crear usuario estándar para DevContainers
-ARG DEV_USER=vscode
-ARG DEV_UID=1000
-ARG DEV_GID=1000
+# Configurar zona horaria para simular fecha específica
+ENV TZ=UTC
 
-RUN groupadd --gid $DEV_GID $DEV_USER \
-    && useradd --uid $DEV_UID --gid $DEV_GID -m $DEV_USER -s /bin/bash \
-    && usermod -aG sudo $DEV_USER \
-    && echo "$DEV_USER ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/$DEV_USER \
-    && chmod 0440 /etc/sudoers.d/$DEV_USER
+# Scripts para ejecutar con fecha simulada
+COPY ./scripts/utils/run_with_fake_date.sh /usr/local/bin/
+COPY ./scripts/utils/run_java_fake_date.sh /usr/local/bin/
+COPY ./scripts/utils/demo_fake_date.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/run_with_fake_date.sh /usr/local/bin/run_java_fake_date.sh /usr/local/bin/demo_fake_date.sh
 
-# Configuración Zsh para el usuario (sin romper bash)
-RUN mkdir -p /home/$DEV_USER \
-    && echo 'export PATH=$PATH' >> /home/$DEV_USER/.zshrc \
-    && echo 'alias ll="ls -lah"' >> /home/$DEV_USER/.zshrc \
-    && echo 'if [ -t 1 ]; then exec zsh; fi' >> /home/$DEV_USER/.bashrc \
-    && chown -R $DEV_USER:$DEV_USER /home/$DEV_USER
+# Crear directorio de trabajo y copiar archivos de ejemplo
+COPY ./scripts/utils/TestDate.java /workspace/
 
-# Crear workspace
-RUN mkdir -p /workspace \
-    && chown -R $DEV_USER:$DEV_USER /workspace
-
-WORKDIR /workspace
-
-RUN echo '#!/bin/sh\nexec sleep infinity' > /keep-alive.sh && chmod +x /keep-alive.sh
-ENTRYPOINT ["/keep-alive.sh"]
+CMD ["bash"]

@@ -94,25 +94,48 @@ echo
 echo "🏷️  Creando tags y subiendo..."
 echo
 
+# Función para subir con reintentos
+push_with_retry() {
+    local image=$1
+    local max_attempts=3
+    local attempt=1
+    
+    while [ $attempt -le $max_attempts ]; do
+        echo "📤 Intento $attempt/$max_attempts: Publicando $image..."
+        
+        if docker push "$image"; then
+            echo "✅ $image publicado exitosamente"
+            return 0
+        else
+            echo "⚠️  Intento $attempt falló"
+            if [ $attempt -lt $max_attempts ]; then
+                echo "⏳ Esperando 5 segundos antes de reintentar..."
+                sleep 5
+            fi
+        fi
+        
+        ((attempt++))
+    done
+    
+    echo "❌ Error: Falló después de $max_attempts intentos"
+    return 1
+}
+
 # Publicar versión específica
-echo "📤 Publicando $COMPONENT:$VERSION..."
-docker push "$COMPONENT:$VERSION"
-if [ $? -ne 0 ]; then
-    echo "❌ Error al subir $COMPONENT:$VERSION"
+if ! push_with_retry "$COMPONENT:$VERSION"; then
+    echo "❌ No se pudo subir $COMPONENT:$VERSION"
     exit 1
 fi
-echo "✅ $COMPONENT:$VERSION publicado exitosamente"
 echo
 
 # Crear tag latest y publicar
-echo "📤 Publicando $COMPONENT:latest..."
+echo "🏷️  Creando tag latest..."
 docker tag "$COMPONENT:$VERSION" "$COMPONENT:latest"
-docker push "$COMPONENT:latest"
-if [ $? -ne 0 ]; then
-    echo "❌ Error al subir $COMPONENT:latest"
+
+if ! push_with_retry "$COMPONENT:latest"; then
+    echo "❌ No se pudo subir $COMPONENT:latest"
     exit 1
 fi
-echo "✅ $COMPONENT:latest publicado exitosamente"
 echo
 
 # Mostrar enlaces
