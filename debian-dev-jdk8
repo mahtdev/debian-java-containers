@@ -1,6 +1,6 @@
 FROM debian:12.12
 
-# Actualizaicion del sistema
+# Actualización e instalación de herramientas
 RUN apt update -y \
     && apt upgrade -y \
     && apt-get install --no-install-recommends -y \
@@ -32,53 +32,42 @@ RUN apt update -y \
     fd-find \
     ripgrep \
     faketime \
+    sudo \
     && apt-get clean
 
+# Java
 COPY ./scripts/utils/jdk8.sh /tmp/
 COPY ./packages/jdk-8u202-linux-x64.tar.gz /opt/
-
-RUN chmod +x /tmp/jdk8.sh
-
-# Instalar java
-RUN bash /tmp/jdk8.sh
-RUN rm /tmp/jdk8.sh
+RUN chmod +x /tmp/jdk8.sh \
+    && bash /tmp/jdk8.sh \
+    && rm /tmp/jdk8.sh
 
 ENV JAVA_HOME=/opt/jdk-8
 ENV PATH="${JAVA_HOME}/bin:${PATH}"
-ENV SHELL=/usr/bin/zsh
 
-# Configurar Zsh como shell por defecto y crear configuración básica
-RUN chsh -s /usr/bin/zsh || true \
-    && mkdir -p /root/.zsh \
-    && echo 'export HISTSIZE=10000' >> /root/.zshrc \
-    && echo 'export SAVEHIST=10000' >> /root/.zshrc \
-    && echo 'export HISTFILE=~/.zsh_history' >> /root/.zshrc \
-    && echo 'setopt SHARE_HISTORY' >> /root/.zshrc \
-    && echo 'setopt APPEND_HISTORY' >> /root/.zshrc
+# Crear usuario estándar para DevContainers
+ARG DEV_USER=vscode
+ARG DEV_UID=1000
+ARG DEV_GID=1000
 
-# Crear alias útiles para desarrollo
-RUN echo 'alias ll="ls -lah"' >> /root/.zshrc \
-    && echo 'alias la="ls -A"' >> /root/.zshrc \
-    && echo 'alias l="ls -CF"' >> /root/.zshrc \
-    && echo 'alias ..="cd .."' >> /root/.zshrc \
-    && echo 'alias ...="cd ../.."' >> /root/.zshrc \
-    && echo 'alias grep="grep --color=auto"' >> /root/.zshrc \
-    && echo 'alias fgrep="fgrep --color=auto"' >> /root/.zshrc \
-    && echo 'alias egrep="egrep --color=auto"' >> /root/.zshrc \
-    && echo 'alias cat="batcat 2>/dev/null || cat"' >> /root/.zshrc \
-    && echo 'alias find="fdfind 2>/dev/null || find"' >> /root/.zshrc
+RUN groupadd --gid $DEV_GID $DEV_USER \
+    && useradd --uid $DEV_UID --gid $DEV_GID -m $DEV_USER -s /bin/bash \
+    && usermod -aG sudo $DEV_USER \
+    && echo "$DEV_USER ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/$DEV_USER \
+    && chmod 0440 /etc/sudoers.d/$DEV_USER
 
-# Configurar zona horaria para simular fecha específica
-ENV TZ=UTC
+# Configuración Zsh para el usuario (sin romper bash)
+RUN mkdir -p /home/$DEV_USER \
+    && echo 'export PATH=$PATH' >> /home/$DEV_USER/.zshrc \
+    && echo 'alias ll="ls -lah"' >> /home/$DEV_USER/.zshrc \
+    && echo 'if [ -t 1 ]; then exec zsh; fi' >> /home/$DEV_USER/.bashrc \
+    && chown -R $DEV_USER:$DEV_USER /home/$DEV_USER
 
-# Scripts para ejecutar con fecha simulada
-COPY ./scripts/utils/run_with_fake_date.sh /usr/local/bin/
-COPY ./scripts/utils/run_java_fake_date.sh /usr/local/bin/
-COPY ./scripts/utils/demo_fake_date.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/run_with_fake_date.sh /usr/local/bin/run_java_fake_date.sh /usr/local/bin/demo_fake_date.sh
+# Crear workspace
+RUN mkdir -p /workspace \
+    && chown -R $DEV_USER:$DEV_USER /workspace
 
-# Crear directorio de trabajo y copiar archivos de ejemplo
-WORKDIR /app
-COPY ./scripts/utils/TestDate.java /app/
+WORKDIR /workspace
 
-CMD ["zsh"]
+RUN echo '#!/bin/sh\nexec sleep infinity' > /keep-alive.sh && chmod +x /keep-alive.sh
+ENTRYPOINT ["/keep-alive.sh"]

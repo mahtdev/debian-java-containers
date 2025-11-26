@@ -1,0 +1,60 @@
+FROM debian:12.12-slim
+
+# Actualizaicion del sistema
+RUN apt update -y \
+    && apt upgrade -y \
+    && apt-get install --no-install-recommends -y \
+    ca-certificates \
+    apt-transport-https \
+    lsb-release \    
+    curl \
+    iproute2 \
+    procps \
+    faketime \
+    wget \
+    unzip \
+    zip \
+    git \
+    vim \
+    nano \
+    htop \
+    tree \
+    jq \
+    net-tools \
+    iputils-ping \
+    telnet \
+    build-essential \
+    sqlite3 \    
+    maven \
+    ca-certificates \
+    ripgrep \
+    fd-find \
+    redis \
+    redis-server \
+    && apt-get autoremove -y \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+COPY ./scripts/utils/jdk21.sh /tmp/
+COPY ./packages/jdk-21_linux-x64_bin.tar.gz /opt/
+
+RUN chmod +x /tmp/jdk21.sh
+
+# Instalar java
+RUN bash /tmp/jdk21.sh
+RUN rm /tmp/jdk21.sh
+
+ENV JAVA_HOME=/opt/jdk-21
+
+# Configurar zona horaria para simular fecha específica
+ENV TZ=UTC
+
+# Scripts para ejecutar con fecha simulada
+COPY ./scripts/utils/run_with_fake_date.sh /usr/local/bin/
+COPY ./scripts/utils/run_java_fake_date.sh /usr/local/bin/
+COPY ./scripts/utils/demo_fake_date.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/run_with_fake_date.sh /usr/local/bin/run_java_fake_date.sh /usr/local/bin/demo_fake_date.sh
+
+# Crear directorio de trabajo y copiar archivos de ejemplo
+COPY ./scripts/utils/TestDate.java /app/
+
+CMD ["bash"]
