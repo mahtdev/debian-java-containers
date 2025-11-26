@@ -1,0 +1,63 @@
+# Dockerfile para el Dev Container
+FROM ruby:3.3.0
+
+# Instalar dependencias necesarias
+RUN apt-get update -y \
+    && apt-get upgrade -y \
+    && apt-get install --no-install-recommends -y \
+    freetds-dev \
+    freetds-bin \
+    libmariadb-dev-compat \
+    libmariadb-dev \
+    libssl-dev \
+    shared-mime-info \
+    curl \
+    nano \
+    redis \
+    redis-server \
+    build-essential \
+    zlib1g-dev \
+    liblzma-dev \
+    telnet \
+    patch \
+    ruby-dev \
+    libpq-dev \
+    libvips \
+    pkg-config \
+    gnupg \
+    git \
+    unzip \
+    zip \
+    ca-certificates \
+    apt-transport-https \
+    lsb-release \    
+    iproute2 \
+    procps \
+    wget \
+    vim \
+    htop \
+    tree \
+    jq \
+    net-tools \
+    iputils-ping \
+    sqlite3 \    
+    ripgrep \
+    fd-find \
+    && curl -sSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+RUN npm install --global vite
+
+RUN gem install bundler -v 2.5.3 \
+    && gem install nokogiri -v 1.15.5 \
+    && gem install net-imap -v 0.3.7 \
+    && gem install vite_rails -v 3.0.17 \
+    && gem install rails -v 7.1.3.2 \
+    && gem install bootsnap
+
+RUN chmod -R 777 /usr/local/bundle
+
+CMD ["bash"]
